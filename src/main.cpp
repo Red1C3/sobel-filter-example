@@ -1,4 +1,5 @@
 #include <SFML/Window.hpp>
+#include <Renderer.h>
 using namespace sf;
 int main()
 {
@@ -11,6 +12,7 @@ int main()
     ctxSettings.minorVersion = 4;
     ctxSettings.stencilBits = 0;
     Window window(VideoMode(width, height), "sobel-filter", Style::Default, ctxSettings);
+    RENDERER.init(height, width);
     while (true)
     {
         Event event;
