@@ -1,5 +1,5 @@
 #version 440
-const float offset=1.0/300.0;
+const float offset=1.0/1100.0;
 in vec2 uv;
 out vec4 color;
 uniform sampler2D renderedTex;
@@ -17,7 +17,6 @@ void main(){
   color.g=sqrt(pixelX.g*pixelX.g+pixelY.g*pixelY.g);
   color.b=sqrt(pixelX.b*pixelX.b+pixelY.b*pixelY.b);
   color.a=1.0;
-  color=texture(renderedTex,uv);
 }
 vec3 applyKernel(float kernel[9]){
    vec2 offsets[9] = vec2[](
