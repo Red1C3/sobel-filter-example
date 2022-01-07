@@ -1,5 +1,6 @@
 #include <Renderer.h>
 using namespace gl44;
+using namespace std;
 Renderer::Renderer() {}
 Renderer &Renderer::instance()
 {
@@ -26,5 +27,98 @@ void Renderer::init(int height, int width)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, framebufferRBO);
     auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     assert(status == GL_FRAMEBUFFER_COMPLETE);
+    glClearColor(0, 0, 0, 1);
+    glEnable(GL_DEPTH_TEST);
+    quadVAO = createSecondPassQuad();
+    secondPassShaderProgram = loadShader("shaders/secondPass.vert", "shaders/secondPass.frag");
     assert(glGetError() == 0);
+}
+void Renderer::drawFirstRenderPass()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, firstPassFBO);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    assert(glGetError() == 0);
+}
+void Renderer::drawSecondRenderPass()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(secondPassShaderProgram);
+    glBindTexture(GL_TEXTURE_2D, firstPassTex);
+    glBindVertexArray(quadVAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    assert(glGetError() == 0);
+}
+GLuint Renderer::createSecondPassQuad()
+{
+    float vertices[] = {-1, -1,
+                        1, -1,
+                        1, 1,
+                        -1, 1};
+    unsigned indices[] = {0, 1, 2, 0, 2, 3};
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, vertices, GL_STATIC_DRAW);
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * 6, indices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    assert(glGetError() == 0);
+    return VAO;
+}
+GLuint Renderer::loadShader(const char *vertexShader, const char *fragmentShader)
+{
+    GLuint id;
+    vector<char> vertexShaderArray, fragmentShaderArray;
+    const char *vertexShaderCode, *fragmentShaderCode;
+
+    vertexShaderArray = readBinaryFile(vertexShader);
+    fragmentShaderArray = readBinaryFile(fragmentShader);
+    vertexShaderCode = vertexShaderArray.data();
+    fragmentShaderCode = fragmentShaderArray.data();
+
+    {
+        auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        int shaderLength = vertexShaderArray.size();
+        glShaderSource(vertexShader, 1, &vertexShaderCode, &shaderLength);
+        glCompileShader(vertexShader);
+        char infoLog[1024];
+        glGetShaderInfoLog(vertexShader, 1024, nullptr, infoLog);
+        printf("%s \n", infoLog);
+        auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        shaderLength = fragmentShaderArray.size();
+        glShaderSource(fragmentShader, 1, &fragmentShaderCode, &shaderLength);
+        glCompileShader(fragmentShader);
+        glGetShaderInfoLog(fragmentShader, 1024, nullptr, infoLog);
+        printf("%s \n", infoLog);
+        id = glCreateProgram();
+        glAttachShader(id, vertexShader);
+        glAttachShader(id, fragmentShader);
+        glLinkProgram(id);
+        glGetProgramInfoLog(id, 1024, nullptr, infoLog);
+        printf("%s \n", infoLog);
+        glDetachShader(id, vertexShader);
+        glDetachShader(id, fragmentShader);
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+    }
+    assert(glGetError() == 0);
+    return id;
+}
+vector<char> Renderer::readBinaryFile(const char *path)
+{
+    fstream fileStream(path, ios::in | ios::binary | ios::ate);
+    vector<char> data;
+    assert(fileStream.is_open());
+    int size = fileStream.tellg();
+    fileStream.seekg(0, ios::beg);
+    data.resize(size);
+    fileStream.read(data.data(), data.size());
+    fileStream.flush();
+    fileStream.close();
+    return data;
 }

@@ -3,7 +3,7 @@
 using namespace sf;
 int main()
 {
-    unsigned height = 720, width = 1280;
+    unsigned height = 576, width = 1024;
     ContextSettings ctxSettings;
     ctxSettings.antialiasingLevel = 1;
     ctxSettings.attributeFlags = ctxSettings.Core;
@@ -28,6 +28,8 @@ int main()
                 break;
             }
         }
+        RENDERER.drawFirstRenderPass();
+        RENDERER.drawSecondRenderPass();
         window.display();
     }
 }
