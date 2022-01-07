@@ -8,6 +8,9 @@ Using Meson with the following dependencies installed:
 - glBinding
 - Assimp
 
+### Updating scene
+Please make sure your meshes are facing up the positive X axis in MODEL space
+
 ## Snapshots
 ![With Sobel applied](Snapshots/sobel.png)
 ![original](Snapshots/original.png)
