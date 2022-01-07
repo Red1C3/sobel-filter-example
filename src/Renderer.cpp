@@ -34,9 +34,11 @@ void Renderer::init(int height, int width)
     secondPassShaderProgram = loadShader("shaders/secondPass.vert", "shaders/secondPass.frag");
     firstPassShaderProgram = loadShader("shaders/firstPass.vert", "shaders/firstPass.frag");
     glUseProgram(firstPassShaderProgram);
-    MVPLocation = glGetUniformLocation(firstPassShaderProgram, "MVP");
-    MVP = perspective(radians(45.0f), (float)width / (float)height, 0.1f, 100.0f) *
-          lookAt(vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{0, 1, 0});
+    MVPLocation = glGetUniformLocation(firstPassShaderProgram, "VP");
+    VP = perspective(radians(45.0f), (float)width / (float)height, 0.1f, 100.0f) *
+         lookAt(vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{0, 1, 0});
+    GLuint lightPosLocation = glGetUniformLocation(firstPassShaderProgram, "light_world");
+    glUniform3fv(lightPosLocation, 1, &lightPos.x);
     assert(glGetError() == 0);
 }
 void Renderer::drawFirstRenderPass()
@@ -44,7 +46,7 @@ void Renderer::drawFirstRenderPass()
     glBindFramebuffer(GL_FRAMEBUFFER, firstPassFBO);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(firstPassShaderProgram);
-    glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &VP[0][0]);
     scene->draw();
     assert(glGetError() == 0);
 }

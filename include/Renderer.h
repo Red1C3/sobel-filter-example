@@ -5,7 +5,7 @@
 #include <memory>
 #include <glbinding/glbinding.h>
 #include <glbinding/gl44/gl.h>
-#include<glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <Scene.h>
 #define RENDERER Renderer::instance()
 class Renderer
@@ -14,9 +14,10 @@ private:
     int height, width;
     gl::GLuint firstPassFBO, firstPassTex,
         secondPassShaderProgram, quadVAO,
-        firstPassShaderProgram,MVPLocation;
+        firstPassShaderProgram, MVPLocation;
     std::unique_ptr<Scene> scene;
-    glm::mat4 MVP;
+    glm::mat4 VP;
+    glm::vec3 lightPos = {0, 1, 0};
 
     Renderer();
     gl::GLuint loadShader(const char *vertexShader, const char *fragmentShader);
