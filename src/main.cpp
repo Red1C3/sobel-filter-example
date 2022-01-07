@@ -13,6 +13,7 @@ int main()
     ctxSettings.stencilBits = 0;
     Window window(VideoMode(width, height), "sobel-filter", Style::Default, ctxSettings);
     RENDERER.init(height, width);
+    RENDERER.loadScene("scene.glb");
     while (true)
     {
         Event event;

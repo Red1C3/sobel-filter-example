@@ -1,6 +1,7 @@
 #include <Renderer.h>
 using namespace gl44;
 using namespace std;
+using namespace glm;
 Renderer::Renderer() {}
 Renderer &Renderer::instance()
 {
@@ -31,12 +32,20 @@ void Renderer::init(int height, int width)
     glEnable(GL_DEPTH_TEST);
     quadVAO = createSecondPassQuad();
     secondPassShaderProgram = loadShader("shaders/secondPass.vert", "shaders/secondPass.frag");
+    firstPassShaderProgram = loadShader("shaders/firstPass.vert", "shaders/firstPass.frag");
+    glUseProgram(firstPassShaderProgram);
+    MVPLocation = glGetUniformLocation(firstPassShaderProgram, "MVP");
+    MVP = perspective(radians(45.0f), (float)width / (float)height, 0.1f, 100.0f) *
+          lookAt(vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{0, 1, 0});
     assert(glGetError() == 0);
 }
 void Renderer::drawFirstRenderPass()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, firstPassFBO);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(firstPassShaderProgram);
+    glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+    scene->draw();
     assert(glGetError() == 0);
 }
 void Renderer::drawSecondRenderPass()
@@ -108,6 +117,10 @@ GLuint Renderer::loadShader(const char *vertexShader, const char *fragmentShader
     }
     assert(glGetError() == 0);
     return id;
+}
+void Renderer::loadScene(const char *path)
+{
+    scene = make_unique<Scene>(path);
 }
 vector<char> Renderer::readBinaryFile(const char *path)
 {
