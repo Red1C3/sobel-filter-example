@@ -5,12 +5,13 @@ out vec4 color;
 uniform sampler2D renderedTex;
 vec3 applyKernel(float kernel[9]);
 void main(){
+    // Soble operator kernels
   float Gx[9]={1,0,-1,
-  2,0,-2,
-  1,0,-1};
+               2,0,-2,
+               1,0,-1};
   float Gy[9]={1,2,1,
-  0,0,0,
-  -1,-2,-1};
+               0,0,0,
+               -1,-2,-1};
   vec3 pixelX=applyKernel(Gx);
   vec3 pixelY=applyKernel(Gy);
   color.r=sqrt(pixelX.r*pixelX.r+pixelY.r*pixelY.r);

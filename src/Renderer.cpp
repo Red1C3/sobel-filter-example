@@ -13,6 +13,7 @@ void Renderer::init(int height, int width)
     this->height = height;
     this->width = width;
     glbinding::initialize(nullptr);
+    // Setup first render pass, which is used for rendering the scene
     glGenTextures(1, &firstPassTex);
     glBindTexture(GL_TEXTURE_2D, firstPassTex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -30,7 +31,9 @@ void Renderer::init(int height, int width)
     assert(status == GL_FRAMEBUFFER_COMPLETE);
     glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
+    // Create a quad to draw the first pass texture on with Sobel applied
     quadVAO = createSecondPassQuad();
+    // Setup shaders
     secondPassShaderProgram = loadShader("shaders/secondPass.vert", "shaders/secondPass.frag");
     firstPassShaderProgram = loadShader("shaders/firstPass.vert", "shaders/firstPass.frag");
     glUseProgram(firstPassShaderProgram);

@@ -3,6 +3,7 @@
 using namespace sf;
 int main()
 {
+    // Create window and OpenGL context
     unsigned height = 576, width = 1024;
     ContextSettings ctxSettings;
     ctxSettings.antialiasingLevel = 1;
@@ -12,6 +13,7 @@ int main()
     ctxSettings.minorVersion = 4;
     ctxSettings.stencilBits = 0;
     Window window(VideoMode(width, height), "sobel-filter", Style::Default, ctxSettings);
+    // Create the nessecary structs and set OpenGL state
     RENDERER.init(height, width);
     RENDERER.loadScene("scene.glb");
     while (true)

@@ -28,6 +28,7 @@ void Scene::loadScene(const char *path)
 }
 Scene::Mesh Scene::loadMesh(aiMesh *mesh)
 {
+    // Extract only vertices position and normals
     vector<vec3> vertices;
     vector<unsigned> indices;
     for (unsigned i = 0; i < mesh->mNumVertices; ++i)

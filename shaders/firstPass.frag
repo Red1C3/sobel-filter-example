@@ -8,6 +8,7 @@ in vec3 normal_world;
 in vec3 pos_world;
 uniform vec3 light_world;
 void main(){
+  // A simple Blinn-Phong implementation
   vec3 fragToLight=light_world-pos_world;
   vec3 resColor=light_color;
   float diffuseFactor=dot(normalize(normal_world),normalize(fragToLight));

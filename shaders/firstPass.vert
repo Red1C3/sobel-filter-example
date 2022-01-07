@@ -6,6 +6,7 @@ out vec3 pos_world;
 uniform mat4 VP;
 void main(){
   gl_Position=VP*vec4(pos_model,1);
+  // No model matrix used
   normal_world=normal_model;
   pos_world=pos_model;
 }
