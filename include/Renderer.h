@@ -12,7 +12,7 @@ class Renderer
 {
 private:
     int height, width;
-    gl::GLuint firstPassFBO, firstPassTex,
+    gl::GLuint firstPassFBO, firstPassTex, firstPassDepthMap,
         secondPassShaderProgram, quadVAO,
         firstPassShaderProgram, MVPLocation;
     std::unique_ptr<Scene> scene;
