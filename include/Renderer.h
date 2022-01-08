@@ -14,7 +14,8 @@ private:
     int height, width;
     gl::GLuint firstPassFBO, firstPassTex, firstPassDepthMap,
         secondPassShaderProgram, quadVAO,
-        firstPassShaderProgram, MVPLocation;
+        firstPassShaderProgram, MVPLocation,
+        renderedTexLocation, renderedDepthMapLocation;
     std::unique_ptr<Scene> scene;
     glm::mat4 VP;
     glm::vec3 lightPos = {0, 1, 0};

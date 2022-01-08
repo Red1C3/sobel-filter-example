@@ -43,6 +43,11 @@ void Renderer::init(int height, int width)
          lookAt(vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{0, 1, 0});
     GLuint lightPosLocation = glGetUniformLocation(firstPassShaderProgram, "light_world");
     glUniform3fv(lightPosLocation, 1, &lightPos.x);
+    glUseProgram(secondPassShaderProgram);
+    renderedTexLocation = glGetUniformLocation(secondPassShaderProgram, "renderedTex");
+    renderedDepthMapLocation = glGetUniformLocation(secondPassShaderProgram, "renderedDepthMap");
+    glUniform1i(renderedTexLocation, 0);
+    glUniform1i(renderedDepthMapLocation, 1);
     assert(glGetError() == 0);
 }
 void Renderer::drawFirstRenderPass()
@@ -59,7 +64,10 @@ void Renderer::drawSecondRenderPass()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(secondPassShaderProgram);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, firstPassTex);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, firstPassDepthMap); // TODO test
     glBindVertexArray(quadVAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     assert(glGetError() == 0);
